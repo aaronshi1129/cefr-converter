@@ -1,0 +1,1291 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEFR English Test Score Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content {
+            flex: 1 0 auto;
+        }
+        
+        footer {
+            flex-shrink: 0;
+        }
+        
+        .cefr-level {
+            transition: all 0.3s ease;
+        }
+        
+        .cefr-level.active {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .slider-thumb {
+            transition: all 0.2s ease;
+        }
+        
+        .slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        
+        .alert {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slider-track {
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, 
+                #f9a8d4, /* Pre-A1 - Pink */
+                #f87171, /* A1 - Red */
+                #fb923c, /* A2 - Orange */
+                #facc15, /* B1 - Yellow */
+                #4ade80, /* B2 - Green */
+                #60a5fa, /* C1 - Blue */
+                #a78bfa  /* C2 - Purple */
+            );
+        }
+        
+        .test-card-header {
+            padding: 12px 16px;
+            background-color: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .test-card-body {
+            padding: 16px;
+            background-color: white;
+        }
+        
+        .test-card-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+        
+        .footer-link {
+            transition: all 0.2s ease;
+        }
+        
+        .footer-link:hover {
+            color: #2563eb;
+        }
+        
+        .footer-link img {
+            transition: all 0.3s ease;
+            vertical-align: middle;
+        }
+        
+        .footer-link:hover img {
+            transform: rotate(10deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="container mx-auto px-4 py-8 max-w-6xl">
+            <header class="text-center mb-10">
+                <h1 class="text-4xl font-bold text-blue-800 mb-2">CEFR English Test Score Converter</h1>
+                <p class="text-gray-600 text-lg">Compare scores across major English proficiency tests available in Taiwan and see their CEFR equivalents</p>
+            </header>
+            
+            <!-- Alert message container -->
+            <div id="alertContainer" class="mb-4 hidden">
+                <div class="alert bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-sm">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p id="alertMessage" class="text-sm"></p>
+                        </div>
+                        <div class="ml-auto pl-3">
+                            <div class="-mx-1.5 -my-1.5">
+                                <button id="closeAlert" class="inline-flex rounded-md p-1.5 text-red-500 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-600">
+                                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Select Test Type</h2>
+                        <select id="testSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <!-- Options will be added dynamically in alphabetical order -->
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Enter Your Score</h2>
+                        <div class="flex items-center">
+                            <input type="number" id="scoreInput" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter your score">
+                            <button id="convertBtn" class="ml-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors">Convert</button>
+                        </div>
+                        <div id="scoreRange" class="text-sm text-gray-500 mt-2"></div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <div class="relative pt-5 pb-8">
+                        <div class="slider-track w-full h-2 rounded-lg"></div>
+                        <input type="range" id="scoreSlider" min="0" max="100" step="1" value="0" 
+                               class="absolute top-5 w-full h-2 appearance-none bg-transparent cursor-pointer">
+                        <div class="absolute -top-1 left-0 slider-thumb" id="sliderThumb" style="transform: translateX(-50%)">
+                            <div class="w-6 h-6 bg-blue-600 rounded-full border-2 border-white shadow-md"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-10">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Your CEFR Level</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4">
+                    <div id="level-pre-a1" class="cefr-level rounded-xl p-4 bg-gray-100 border-2 border-gray-200 text-center">
+                        <div class="text-2xl font-bold mb-1">Pre-A1</div>
+                        <div class="text-sm text-gray-600">Starter</div>
+                    </div>
+                    <div id="level-a1" class="cefr-level rounded-xl p-4 bg-gray-100 border-2 border-gray-200 text-center">
+                        <div class="text-2xl font-bold mb-1">A1</div>
+                        <div class="text-sm text-gray-600">Beginner</div>
+                    </div>
+                    <div id="level-a2" class="cefr-level rounded-xl p-4 bg-gray-100 border-2 border-gray-200 text-center">
+                        <div class="text-2xl font-bold mb-1">A2</div>
+                        <div class="text-sm text-gray-600">Elementary</div>
+                    </div>
+                    <div id="level-b1" class="cefr-level rounded-xl p-4 bg-gray-100 border-2 border-gray-200 text-center">
+                        <div class="text-2xl font-bold mb-1">B1</div>
+                        <div class="text-sm text-gray-600">Intermediate</div>
+                    </div>
+                    <div id="level-b2" class="cefr-level rounded-xl p-4 bg-gray-100 border-2 border-gray-200 text-center">
+                        <div class="text-2xl font-bold mb-1">B2</div>
+                        <div class="text-sm text-gray-600">Upper Intermediate</div>
+                    </div>
+                    <div id="level-c1" class="cefr-level rounded-xl p-4 bg-gray-100 border-2 border-gray-200 text-center">
+                        <div class="text-2xl font-bold mb-1">C1</div>
+                        <div class="text-sm text-gray-600">Advanced</div>
+                    </div>
+                    <div id="level-c2" class="cefr-level rounded-xl p-4 bg-gray-100 border-2 border-gray-200 text-center">
+                        <div class="text-2xl font-bold mb-1">C2</div>
+                        <div class="text-sm text-gray-600">Proficient</div>
+                    </div>
+                </div>
+                
+                <div id="resultDetails" class="mt-8 bg-white rounded-xl shadow p-6 hidden">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Your Results</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-gray-600 mb-2">Test: <span id="resultTest" class="font-medium text-gray-900"></span></p>
+                            <p class="text-gray-600 mb-2">Your Score: <span id="resultScore" class="font-medium text-gray-900"></span></p>
+                            <p class="text-gray-600 mb-2">CEFR Level: <span id="resultLevel" class="font-medium text-gray-900"></span></p>
+                        </div>
+                        <div id="resultDescription" class="text-gray-700">
+                            <!-- Description will be added dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-10">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Equivalent Scores Across Tests</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="equivalentScores">
+                    <!-- Equivalent scores will be added dynamically -->
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-10">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">About CEFR Levels</h2>
+                
+                <div class="space-y-4">
+                    <div class="p-4 border-l-4 border-pink-400 bg-pink-50 rounded">
+                        <h3 class="font-semibold text-lg text-pink-800">Pre-A1 - Starter</h3>
+                        <p class="text-gray-700">Can understand and use basic expressions to satisfy concrete needs. Can recognize familiar words and very basic phrases concerning themselves, family, and immediate surroundings when people speak slowly and clearly.</p>
+                    </div>
+                    
+                    <div class="p-4 border-l-4 border-red-400 bg-red-50 rounded">
+                        <h3 class="font-semibold text-lg text-red-800">A1 - Beginner</h3>
+                        <p class="text-gray-700">Can understand and use familiar everyday expressions and very basic phrases. Can introduce themselves and others and can ask and answer questions about personal details.</p>
+                    </div>
+                    
+                    <div class="p-4 border-l-4 border-orange-400 bg-orange-50 rounded">
+                        <h3 class="font-semibold text-lg text-orange-800">A2 - Elementary</h3>
+                        <p class="text-gray-700">Can understand sentences and frequently used expressions related to areas of most immediate relevance. Can communicate in simple and routine tasks requiring a simple and direct exchange of information.</p>
+                    </div>
+                    
+                    <div class="p-4 border-l-4 border-yellow-400 bg-yellow-50 rounded">
+                        <h3 class="font-semibold text-lg text-yellow-800">B1 - Intermediate</h3>
+                        <p class="text-gray-700">Can understand the main points of clear standard input on familiar matters regularly encountered in work, school, leisure, etc. Can deal with most situations likely to arise while traveling in an area where the language is spoken.</p>
+                    </div>
+                    
+                    <div class="p-4 border-l-4 border-green-400 bg-green-50 rounded">
+                        <h3 class="font-semibold text-lg text-green-800">B2 - Upper Intermediate</h3>
+                        <p class="text-gray-700">Can understand the main ideas of complex text on both concrete and abstract topics, including technical discussions in their field of specialization. Can interact with a degree of fluency and spontaneity.</p>
+                    </div>
+                    
+                    <div class="p-4 border-l-4 border-blue-400 bg-blue-50 rounded">
+                        <h3 class="font-semibold text-lg text-blue-800">C1 - Advanced</h3>
+                        <p class="text-gray-700">Can understand a wide range of demanding, longer texts, and recognize implicit meaning. Can express ideas fluently and spontaneously without much obvious searching for expressions.</p>
+                    </div>
+                    
+                    <div class="p-4 border-l-4 border-purple-400 bg-purple-50 rounded">
+                        <h3 class="font-semibold text-lg text-purple-800">C2 - Proficient</h3>
+                        <p class="text-gray-700">Can understand with ease virtually everything heard or read. Can summarize information from different spoken and written sources, reconstructing arguments and accounts in a coherent presentation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="py-6 bg-white shadow-inner mt-10">
+        <div class="container mx-auto px-4 text-center">
+            <a href="https://sites.google.com/view/aaronshi" target="_blank" rel="noopener noreferrer" class="footer-link inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors">
+                Created by Aaron Shi
+                <img src="https://alittlemoreenglish.weebly.com/uploads/2/6/6/3/26638990/favicon-32x32_orig.png" alt="Aaron Shi" width="24" height="24" class="ml-2">
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const testSelect = document.getElementById('testSelect');
+            const scoreInput = document.getElementById('scoreInput');
+            const convertBtn = document.getElementById('convertBtn');
+            const scoreRange = document.getElementById('scoreRange');
+            const scoreSlider = document.getElementById('scoreSlider');
+            const sliderThumb = document.getElementById('sliderThumb');
+            const resultDetails = document.getElementById('resultDetails');
+            const resultTest = document.getElementById('resultTest');
+            const resultScore = document.getElementById('resultScore');
+            const resultLevel = document.getElementById('resultLevel');
+            const resultDescription = document.getElementById('resultDescription');
+            const equivalentScores = document.getElementById('equivalentScores');
+            const alertContainer = document.getElementById('alertContainer');
+            const alertMessage = document.getElementById('alertMessage');
+            const closeAlert = document.getElementById('closeAlert');
+            
+            // CEFR levels in order
+            const cefrLevels = ['Pre-A1', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+            
+            // Level colors for visual representation
+            const levelColors = {
+                'Pre-A1': '#f9a8d4', // Pink
+                'A1': '#f87171',     // Red
+                'A2': '#fb923c',     // Orange
+                'B1': '#facc15',     // Yellow
+                'B2': '#4ade80',     // Green
+                'C1': '#60a5fa',     // Blue
+                'C2': '#a78bfa'      // Purple
+            };
+            
+            // Test score ranges and CEFR mappings
+            const testData = {
+                aptis_general_l: {
+                    name: "Aptis General (Listening)",
+                    min: 0,
+                    max: 50,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': [8, 15],
+                        'A2': [16, 23],
+                        'B1': [24, 31],
+                        'B2': [32, 41],
+                        'C1': [42, 50],
+                        'C2': null
+                    }
+                },
+                aptis_general_r: {
+                    name: "Aptis General (Reading)",
+                    min: 0,
+                    max: 50,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': [8, 15],
+                        'A2': [16, 25],
+                        'B1': [26, 37],
+                        'B2': [38, 45],
+                        'C1': [46, 50],
+                        'C2': null
+                    }
+                },
+                aptis_general_s: {
+                    name: "Aptis General (Speaking)",
+                    min: 0,
+                    max: 50,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': [4, 15],
+                        'A2': [16, 25],
+                        'B1': [26, 40],
+                        'B2': [41, 47],
+                        'C1': [48, 50],
+                        'C2': null
+                    }
+                },
+                aptis_general_w: {
+                    name: "Aptis General (Writing)",
+                    min: 0,
+                    max: 50,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': [6, 17],
+                        'A2': [18, 25],
+                        'B1': [26, 39],
+                        'B2': [40, 47],
+                        'C1': [48, 50],
+                        'C2': null
+                    }
+                },
+                aptis_advanced_l: {
+                    name: "Aptis Advanced (Listening)",
+                    min: 0,
+                    max: 50,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': null,
+                        'A2': null,
+                        'B1': [14, 23],
+                        'B2': [24, 37],
+                        'C1': [38, 49],
+                        'C2': [50, 50]
+                    }
+                },
+                aptis_advanced_r: {
+                    name: "Aptis Advanced (Reading)",
+                    min: 0,
+                    max: 50,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': null,
+                        'A2': null,
+                        'B1': [16, 27],
+                        'B2': [28, 39],
+                        'C1': [40, 49],
+                        'C2': [50, 50]
+                    }
+                },
+                aptis_advanced_sw: {
+                    name: "Aptis Advanced (Writing or Speaking)",
+                    min: 0,
+                    max: 50,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': null,
+                        'A2': null,
+                        'B1': [22, 36],
+                        'B2': [37, 43],
+                        'C1': [44, 49],
+                        'C2': [50, 50]
+                    }
+                },
+                bestep_lr: {
+                    name: "BESTEP Listening and Reading",
+                    min: 0,
+                    max: 140,
+                    levels: {
+                        'Pre-A1': [0, 29],
+                        'A1': [30, 39],
+                        'A2': [40, 69],
+                        'B1': [70, 99],
+                        'B2': [100, 129],
+                        'C1': [130, 140],
+                        'C2': null
+                    }
+                },
+                bestep_sw: {
+                    name: "BESTEP Speaking or Writing",
+                    min: 0,
+                    max: 360,
+                    step: 5,
+                    levels: {
+                        'Pre-A1': [0, 115],
+                        'A1': [120, 145],
+                        'A2': [150, 225],
+                        'B1': [230, 275],
+                        'B2': [280, 325],
+                        'C1': [330, 360],
+                        'C2': null
+                    }
+                },
+                cambridge: {
+                    name: "Cambridge English Qualifications",
+                    min: 0,
+                    max: 6,
+                    isText: true,
+                    options: ["YLE Starters", "YLE Movers", "YLE Flyers / A2 Key (KET)", "B1 Preliminary (PET)", "B2 First (FCE)", "C1 Advanced (CAE)", "C2 Proficiency (CPE)"],
+                    levels: {
+                        'Pre-A1': ["YLE Starters"],
+                        'A1': ["YLE Movers"],
+                        'A2': ["YLE Flyers / A2 Key (KET)"]
+                        'B1': ["B1 Preliminary (PET)"],
+                        'B2': ["B2 First (FCE)"],
+                        'C1': ["C1 Advanced (CAE)"],
+                        'C2': ["C2 Proficiency (CPE)"]
+                    },
+                    testLevels: [
+                        { name: "YLE Starters", cefr: "Pre-A1" },
+                        { name: "YLE Movers", cefr: "A1" },
+                        { name: "YLE Flyers / A2 Key (KET)", cefr: "A2" },
+                        { name: "B1 Preliminary (PET)", cefr: "B1" },
+                        { name: "B2 First (FCE)", cefr: "B2" },
+                        { name: "C1 Advanced (CAE)", cefr: "C1" },
+                        { name: "C2 Proficiency (CPE)", cefr: "C2" }
+                    ]
+                },
+                csept_l1: {
+                    name: "CSEPT Level 1 (College Student English Proficiency Test)",
+                    min: 0,
+                    max: 360,
+                    levels: {
+                        'Pre-A1': [0, 89],
+                        'A1': [90, 129],
+                        'A2': [130, 169],
+                        'B1': [170, 240],
+                        'B2': null,
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                csept_l2: {
+                    name: "CSEPT  Level 2 (College Student English Proficiency Test)",
+                    min: 0,
+                    max: 360,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': [0, 149],
+                        'A2': [120, 179],
+                        'B1': [180, 239],
+                        'B2': [240, 360],
+                        'C1': null
+                        'C2': null
+                    }
+                },
+                csept_l2: {
+                    name: "C-EPT (Certificate of English Proficiency Test by CVES)",
+                    min: 0,
+                    max: 4,
+                    isText: true,
+                    options: ["Level 4", "Level 3", "Level 2", "Level 1"],
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': ["Level 4"],
+                        'A2': ["Level 3"],
+                        'B1': ["Level 2"],
+                        'B2': ["Level 1"],
+                        'C1': null,
+                        'C2': null
+                    },
+                    testLevels: [
+                        { name: "Level 4", cefr: "A1" },
+                        { name: "Level 3", cefr: "A2" },
+                        { name: "Level 2", cefr: "B1" },
+                        { name: "Level 1", cefr: "B2" }
+                    ]
+                },
+                duolingo: {
+                    name: "Duolingo English Test",
+                    min: 10,
+                    max: 160,
+                    step: 5,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': null,
+                        'A2': [10, 55],
+                        'B1': [56, 85],
+                        'B2': [100, 115],
+                        'C1': [130, 145],
+                        'C2': [155, 160]
+                    }
+                },
+                englishscore: {
+                    name: "British Council EnglishScore",
+                    min: 0,
+                    max: 599,
+                    levels: {
+                        'Pre-A1': [0, 99],
+                        'A1': [100, 199],
+                        'A2': [200, 299],
+                        'B1': [300, 399],
+                        'B2': [400, 499],
+                        'C1': [500, 599],
+                        'C2': null
+                    }
+                },
+                gept: {
+                    name: "GEPT",
+                    min: 0,
+                    max: 5,
+                    isText: true,
+                    options: ["Elementary", "Intermediate", "High-Intermediate", "Advanced", "Superior"],
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': null,
+                        'A2': ["Elementary"],
+                        'B1': ["Intermediate"],
+                        'B2': ["High-Intermediate"],
+                        'C1': ["Advanced"],
+                        'C2': ["Superior"]
+                    },
+                    testLevels: [
+                        { name: "Elementary", cefr: "A2" },
+                        { name: "Intermediate", cefr: "B1" },
+                        { name: "High-Intermediate", cefr: "B2" },
+                        { name: "Advanced", cefr: "C1" },
+                        { name: "Superior", cefr: "C2" }
+                    ]
+                },
+                gept_kids: {
+                    name: "GEPT Kids",
+                    min: 0,
+                    max: 10,
+                    levels: {
+                        'Pre-A1': [2, 7],
+                        'A1': [8, 10],
+                        'A2': null,
+                        'B1': null,
+                        'B2': null,
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                ielts: {
+                    name: "IELTS Academic or General Training",
+                    min: 0,
+                    max: 9,
+                    step: 0.5,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': null,
+                        'A2': null,
+                        'B1': [4, 5],
+                        'B2': [5.5, 6.5],
+                        'C1': [7, 8],
+                        'C2': [8.5, 9]
+                    }
+                },
+                linguaskill: {
+                    name: "Linguaskill or Linguaskill Business",
+                    min: 100,
+                    max: 180,
+                    levels: {
+                        'Pre-A1': [82, 99],
+                        'A1': [100, 119],
+                        'A2': [120, 139],
+                        'B1': [140, 159],
+                        'B2': [160, 179],
+                        'C1': [180, 199],
+                        'C2': [200, 210]
+                    }
+                },
+                oxford: {
+                    name: "Oxford Test of English",
+                    min: 0,
+                    max: 140,
+                    levels: {
+                        'Pre-A1': [0, 30],
+                        'A1': [31, 50],
+                        'A2': [51, 80],
+                        'B1': [81, 110],
+                        'B2': [111, 140],
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                pearson: {
+                    name: "PTE Academic (Pearson Test of English)",
+                    min: 10,
+                    max: 90,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': [10, 29],
+                        'A2': [30, 42],
+                        'B1': [43, 58],
+                        'B2': [59, 75],
+                        'C1': [76, 84],
+                        'C2': [85, 90]
+                    }
+                },
+                style_jet: {
+                    name: "STYLE (Saxoncourt Tests for Young learners of English) / JET (Junior English Tests)",
+                    min: 0,
+                    max: 4,
+                    isText: true,
+                    options: ["STYLE Level 1/2/3/4", "STYLE Level 5/6", "JET Level A", "JET Level B/C"],
+                    levels: {
+                        'Pre-A1': ["STYLE Level 1/2/3/4"],
+                        'A1': ["STYLE Level 5/6"],
+                        'A2': ["JET Level A"],
+                        'B1': ["JET Level B/C"],
+                        'B2': null,
+                        'C1': null,
+                        'C2': null
+                    },
+                    testLevels: [
+                        { name: "STYLE Level 1/2/3/4", cefr: "Pre-A1" },
+                        { name: "STYLE Level 5/6", cefr: "A1" },
+                        { name: "JET Level A", cefr: "A2" },
+                        { name: "JET Level B/C", cefr: "B1" }
+                    ]
+                },
+                toefl_essentials: {
+                    name: "TOEFL Essentials",
+                    min: 1,
+                    max: 12,
+                    step: 0.5,
+                    levels: {
+                        'Pre-A1': [1, 1.5],
+                        'A1': [2, 2.5],
+                        'A2': [3, 4.5],
+                        'B1': [5, 7.5],
+                        'B2': [8, 9.5],
+                        'C1': [10, 11.5],
+                        'C2': [12, 12]
+                    }
+                },
+                toefl_ibt: {
+                    name: "TOEFL iBT",
+                    min: 0,
+                    max: 120,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': null,
+                        'A2': nuall,
+                        'B1': [42, 71],
+                        'B2': [72, 94],
+                        'C1': [95, 114],
+                        'C2': [115, 120]
+                    }
+                },
+                toefl_itp_l1: {
+                    name: "TOEFL ITP Level 1",
+                    min: 310,
+                    max: 677,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': null,
+                        'A2': [343, 432],
+                        'B1': [433, 542],
+                        'B2': [543, 619],
+                        'C1': [620, 677],
+                        'C2': null
+                    }
+                },
+                toefl_itp_l2: {
+                    name: "TOEFL ITP Level 2",
+                    min: 200,
+                    max: 500,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': null,
+                        'A2': [343, 432],
+                        'B1': [433, 500],
+                        'B2': null,
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toefl_itp_s: {
+                    name: "TOEFL ITP Speaking",
+                    min: 31,
+                    max: 68,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': null,
+                        'A2': [41, 47],
+                        'B1': [48, 57],
+                        'B2': [58, 63],
+                        'C1': [64, 68],
+                        'C2': null
+                    }
+                },
+                toefl_junior_l: {
+                    name: "TOEFL Junior Standard (Listening Comprehension)",
+                    min: 100,
+                    max: 300,
+                    step: 5,
+                    levels: {
+                        'Pre-A1': [600, 625],
+                        'A1': [626, 644],
+                        'A2': [645, 744],
+                        'B1': [785, 860],
+                        'B2': [865, 900],
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toefl_junior_l: {
+                    name: "TOEFL Junior Standard (Language Form and Meaning)",
+                    min: 600,
+                    max: 900,
+                    step: 5,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': [100, 210],
+                        'A2': [645, 744],
+                        'B1': [785, 860],
+                        'B2': [865, 900],
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toefl_junior_l: {
+                    name: "TOEFL Junior Standard (Reading Comprehension)",
+                    min: 600,
+                    max: 900,
+                    step: 5,
+                    levels: {
+                        'Pre-A1': [600, 625],
+                        'A1': [626, 644],
+                        'A2': [645, 744],
+                        'B1': [785, 860],
+                        'B2': [865, 900],
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toefl_primary: {
+                    name: "TOEFL Primary",
+                    min: 100,
+                    max: 115,
+                    levels: {
+                        'Pre-A1': [100, 101],
+                        'A1': [102, 103],
+                        'A2': [104, 109],
+                        'B1': [110, 115],
+                        'B2': null,
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toeic_bridge: {
+                    name: "TOEIC Bridge",
+                    min: 15,
+                    max: 180,
+                    levels: {
+                        'Pre-A1': [15, 34],
+                        'A1': [35, 69],
+                        'A2': [70, 109],
+                        'B1': [110, 149],
+                        'B2': [150, 180],
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toeic_lr: {
+                    name: "TOEIC L&R",
+                    min: 10,
+                    max: 990,
+                    levels: {
+                        'Pre-A1': [10, 120],
+                        'A1': [121, 225],
+                        'A2': [226, 545],
+                        'B1': [546, 785],
+                        'B2': [786, 940],
+                        'C1': [941, 990],
+                        'C2': null
+                    }
+                },
+                toeic_sw: {
+                    name: "TOEIC S&W",
+                    min: 0,
+                    max: 400,
+                    levels: {
+                        'Pre-A1': [0, 50],
+                        'A1': [51, 90],
+                        'A2': [91, 170],
+                        'B1': [171, 250],
+                        'B2': [251, 320],
+                        'C1': [321, 400],
+                        'C2': null
+                    }
+                }
+            };
+            
+            // CEFR level descriptions
+            const cefrDescriptions = {
+                'Pre-A1': "Can recognize and use a few basic words and phrases. Can follow very simple instructions with help. Primarily for young learners beginning their English language journey.",
+                'A1': "Can understand and use familiar everyday expressions and very basic phrases. Can introduce themselves and others and can ask and answer questions about personal details.",
+                'A2': "Can understand sentences and frequently used expressions related to areas of most immediate relevance. Can communicate in simple and routine tasks requiring a simple and direct exchange of information.",
+                'B1': "Can understand the main points of clear standard input on familiar matters regularly encountered in work, school, leisure, etc. Can deal with most situations likely to arise while traveling in an area where the language is spoken.",
+                'B2': "Can understand the main ideas of complex text on both concrete and abstract topics, including technical discussions in their field of specialization. Can interact with a degree of fluency and spontaneity.",
+                'C1': "Can understand a wide range of demanding, longer texts, and recognize implicit meaning. Can express ideas fluently and spontaneously without much obvious searching for expressions.",
+                'C2': "Can understand with ease virtually everything heard or read. Can summarize information from different spoken and written sources, reconstructing arguments and accounts in a coherent presentation."
+            };
+            
+            // Show alert message
+            function showAlert(message) {
+                alertMessage.textContent = message;
+                alertContainer.classList.remove('hidden');
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    alertContainer.classList.add('hidden');
+                }, 5000);
+            }
+            
+            // Close alert on button click
+            closeAlert.addEventListener('click', function() {
+                alertContainer.classList.add('hidden');
+            });
+            
+            // Populate test select dropdown in alphabetical order
+            function populateTestSelect() {
+                // Get sorted test IDs by test name
+                const sortedTestIds = Object.keys(testData).sort((a, b) => 
+                    testData[a].name.localeCompare(testData[b].name)
+                );
+                
+                // Add options to select element
+                sortedTestIds.forEach(testId => {
+                    const option = document.createElement('option');
+                    option.value = testId;
+                    option.textContent = testData[testId].name;
+                    testSelect.appendChild(option);
+                });
+            }
+            
+            // Update score range display based on selected test
+            function updateScoreRange() {
+                const selectedTest = testSelect.value;
+                const test = testData[selectedTest];
+                
+                if (test.isText) {
+                    scoreInput.type = "text";
+                    scoreInput.placeholder = "Select an option";
+                    scoreRange.textContent = `Options: ${test.options.join(", ")}`;
+                    
+                    // Create a datalist for the input
+                    if (!document.getElementById('scoreOptions')) {
+                        const datalist = document.createElement('datalist');
+                        datalist.id = 'scoreOptions';
+                        test.options.forEach(option => {
+                            const optionEl = document.createElement('option');
+                            optionEl.value = option;
+                            datalist.appendChild(optionEl);
+                        });
+                        scoreInput.setAttribute('list', 'scoreOptions');
+                        scoreInput.parentNode.appendChild(datalist);
+                    } else {
+                        const datalist = document.getElementById('scoreOptions');
+                        datalist.innerHTML = '';
+                        test.options.forEach(option => {
+                            const optionEl = document.createElement('option');
+                            optionEl.value = option;
+                            datalist.appendChild(optionEl);
+                        });
+                    }
+                    
+                    // Configure slider for text-based tests
+                    scoreSlider.min = 0;
+                    scoreSlider.max = test.options.length - 1;
+                    scoreSlider.step = 1;
+                    scoreSlider.value = 0;
+                } else {
+                    scoreInput.type = "number";
+                    scoreInput.placeholder = "Enter your score";
+                    scoreInput.removeAttribute('list');
+                    
+                    if (document.getElementById('scoreOptions')) {
+                        document.getElementById('scoreOptions').remove();
+                    }
+                    
+                    const step = test.step || 1;
+                    scoreRange.textContent = `Valid range: ${test.min} to ${test.max}${step < 1 ? ` (in steps of ${step})` : ''}`;
+                    
+                    // Configure slider
+                    scoreSlider.min = test.min;
+                    scoreSlider.max = test.max;
+                    scoreSlider.step = test.step || 1;
+                    scoreSlider.value = test.min;
+                }
+            }
+            
+            // Update slider thumb position
+            function updateSliderThumb() {
+                const selectedTest = testSelect.value;
+                const test = testData[selectedTest];
+                
+                if (test.isText) {
+                    // For text-based tests
+                    const percent = (scoreSlider.value / (test.options.length - 1)) * 100;
+                    sliderThumb.style.left = `${percent}%`;
+                    
+                    // Update the input field with the selected option
+                    scoreInput.value = test.options[parseInt(scoreSlider.value)];
+                } else {
+                    // For numeric tests
+                    const percent = (scoreSlider.value - scoreSlider.min) / (scoreSlider.max - scoreSlider.min) * 100;
+                    sliderThumb.style.left = `${percent}%`;
+                }
+            }
+            
+            // Validate score based on test type
+            function validateScore(test, score) {
+                if (test.isText) {
+                    // For text-based scores, check if it's in the options list
+                    if (!test.options.includes(score)) {
+                        showAlert(`"${score}" is not a valid option for ${test.name}. Please select from: ${test.options.join(", ")}`);
+                        return false;
+                    }
+                } else {
+                    // For numeric scores
+                    const numScore = parseFloat(score);
+                    
+                    if (isNaN(numScore)) {
+                        showAlert(`Please enter a valid number for ${test.name}.`);
+                        return false;
+                    }
+                    
+                    if (numScore < test.min || numScore > test.max) {
+                        showAlert(`Please enter a score between ${test.min} and ${test.max} for ${test.name}.`);
+                        return false;
+                    }
+                    
+                    // Check if the score respects the step value (if defined)
+                    if (test.step && test.step < 1) {
+                        const remainder = (numScore - test.min) % test.step;
+                        const isValidStep = Math.abs(remainder) < 0.0001 || Math.abs(remainder - test.step) < 0.0001;
+                        
+                        if (!isValidStep) {
+                            const validValues = [];
+                            const nearestLower = Math.floor(numScore / test.step) * test.step;
+                            const nearestHigher = Math.ceil(numScore / test.step) * test.step;
+                            
+                            // Round to handle floating point precision issues
+                            const roundedLower = Math.round((nearestLower + test.min) * 100) / 100;
+                            const roundedHigher = Math.round((nearestHigher + test.min) * 100) / 100;
+                            
+                            if (roundedLower >= test.min) validValues.push(roundedLower);
+                            if (roundedHigher <= test.max) validValues.push(roundedHigher);
+                            
+                            showAlert(`${numScore} is not a valid score for ${test.name}. This test uses increments of ${test.step}. Valid scores near ${numScore} are: ${validValues.join(', ')}`);
+                            return false;
+                        }
+                    }
+                }
+                
+                return true;
+            }
+            
+            // Convert score to CEFR level
+            function convertScore() {
+                const selectedTest = testSelect.value;
+                const test = testData[selectedTest];
+                let score = scoreInput.value;
+                
+                // Validate the score
+                if (!validateScore(test, score)) {
+                    return;
+                }
+                
+                let cefrLevel = '';
+                
+                // Reset all level highlights
+                document.querySelectorAll('.cefr-level').forEach(el => {
+                    el.classList.remove('active');
+                    el.classList.remove('bg-blue-100');
+                    el.classList.remove('border-blue-500');
+                    el.classList.add('bg-gray-100');
+                    el.classList.add('border-gray-200');
+                });
+                
+                if (test.isText) {
+                    // Handle text-based scores
+                    for (const [level, values] of Object.entries(test.levels)) {
+                        if (values && values.includes(score)) {
+                            cefrLevel = level;
+                            break;
+                        }
+                    }
+                } else {
+                    // Handle numeric scores
+                    const numScore = parseFloat(score);
+                    
+                    for (const [level, range] of Object.entries(test.levels)) {
+                        if (range && numScore >= range[0] && numScore <= range[1]) {
+                            cefrLevel = level;
+                            break;
+                        }
+                    }
+                }
+                
+                if (cefrLevel) {
+                    // Highlight the corresponding CEFR level
+                    const levelElement = document.getElementById(`level-${cefrLevel.toLowerCase().replace(' ', '-')}`);
+                    levelElement.classList.add('active', 'bg-blue-100', 'border-blue-500');
+                    levelElement.classList.remove('bg-gray-100', 'border-gray-200');
+                    
+                    // Show result details
+                    resultTest.textContent = test.name;
+                    resultScore.textContent = score;
+                    resultLevel.textContent = `${cefrLevel} (${getLevelName(cefrLevel)})`;
+                    resultDescription.textContent = cefrDescriptions[cefrLevel];
+                    resultDetails.classList.remove('hidden');
+                    
+                    // Generate equivalent scores
+                    generateEquivalentScores(cefrLevel);
+                } else {
+                    showAlert(`Could not determine CEFR level for the given score: ${score}`);
+                }
+            }
+            
+            // Get level name from level code
+            function getLevelName(level) {
+                const names = {
+                    'Pre-A1': 'Starter',
+                    'A1': 'Beginner',
+                    'A2': 'Elementary',
+                    'B1': 'Intermediate',
+                    'B2': 'Upper Intermediate',
+                    'C1': 'Advanced',
+                    'C2': 'Proficient'
+                };
+                return names[level] || '';
+            }
+            
+            // Generate equivalent scores for other tests
+            function generateEquivalentScores(cefrLevel) {
+                equivalentScores.innerHTML = '';
+                
+                // Get sorted test IDs by test name
+                const sortedTestIds = Object.keys(testData).sort((a, b) => 
+                    testData[a].name.localeCompare(testData[b].name)
+                );
+                
+                for (const testId of sortedTestIds) {
+                    if (testId === testSelect.value) continue; // Skip the current test
+                    
+                    const test = testData[testId];
+                    const card = document.createElement('div');
+                    card.className = 'test-card overflow-hidden';
+                    
+                    // Get color based on CEFR level
+                    const levelColor = levelColors[cefrLevel] || '#cccccc';
+                    const bgColor = `${levelColor}20`; // Add 20% opacity
+                    
+                    // Create card header
+                    const header = document.createElement('div');
+                    header.className = 'test-card-header';
+                    header.style.borderLeft = `4px solid ${levelColor}`;
+                    
+                    const title = document.createElement('h3');
+                    title.className = 'font-semibold text-gray-800 truncate';
+                    title.textContent = test.name;
+                    header.appendChild(title);
+                    
+                    // Create card body
+                    const body = document.createElement('div');
+                    body.className = 'test-card-body';
+                    
+                    // Check if this test has a mapping for the current CEFR level
+                    if (test.levels[cefrLevel] === null) {
+                        const notAvailable = document.createElement('div');
+                        notAvailable.className = 'flex items-center justify-between';
+                        
+                        const scoreText = document.createElement('p');
+                        scoreText.className = 'text-gray-500 italic';
+                        scoreText.textContent = 'Not available for this level';
+                        
+                        notAvailable.appendChild(scoreText);
+                        body.appendChild(notAvailable);
+                    } else if (test.isText) {
+                        if (test.levels[cefrLevel] && test.levels[cefrLevel].length > 0) {
+                            const scoreContainer = document.createElement('div');
+                            scoreContainer.className = 'flex items-center justify-between';
+                            
+                            const scoreText = document.createElement('p');
+                            scoreText.className = 'text-gray-700 font-medium text-lg';
+                            scoreText.textContent = test.levels[cefrLevel].join(' or ');
+                            
+                            const badge = document.createElement('span');
+                            badge.className = 'test-card-badge';
+                            badge.style.backgroundColor = bgColor;
+                            badge.style.color = cefrLevel === 'Pre-A1' ? '#be185d' : 
+                                               cefrLevel === 'A1' ? '#b91c1c' :
+                                               cefrLevel === 'A2' ? '#c2410c' :
+                                               cefrLevel === 'B1' ? '#a16207' :
+                                               cefrLevel === 'B2' ? '#15803d' :
+                                               cefrLevel === 'C1' ? '#1d4ed8' : '#6d28d9';
+                            badge.textContent = `${cefrLevel}`;
+                            
+                            scoreContainer.appendChild(scoreText);
+                            scoreContainer.appendChild(badge);
+                            body.appendChild(scoreContainer);
+                        } else {
+                            const notAvailable = document.createElement('div');
+                            notAvailable.className = 'flex items-center justify-between';
+                            
+                            const scoreText = document.createElement('p');
+                            scoreText.className = 'text-gray-500 italic';
+                            scoreText.textContent = 'Not available for this level';
+                            
+                            notAvailable.appendChild(scoreText);
+                            body.appendChild(notAvailable);
+                        }
+                    } else {
+                        if (test.levels[cefrLevel]) {
+                            const [min, max] = test.levels[cefrLevel];
+                            
+                            const scoreContainer = document.createElement('div');
+                            scoreContainer.className = 'flex items-center justify-between';
+                            
+                            const scoreText = document.createElement('p');
+                            scoreText.className = 'text-gray-700 font-medium text-lg';
+                            scoreText.textContent = min !== max ? `${min} - ${max}` : `${min}`;
+                            
+                            const badge = document.createElement('span');
+                            badge.className = 'test-card-badge';
+                            badge.style.backgroundColor = bgColor;
+                            badge.style.color = cefrLevel === 'Pre-A1' ? '#be185d' : 
+                                               cefrLevel === 'A1' ? '#b91c1c' :
+                                               cefrLevel === 'A2' ? '#c2410c' :
+                                               cefrLevel === 'B1' ? '#a16207' :
+                                               cefrLevel === 'B2' ? '#15803d' :
+                                               cefrLevel === 'C1' ? '#1d4ed8' : '#6d28d9';
+                            badge.textContent = `${cefrLevel}`;
+                            
+                            scoreContainer.appendChild(scoreText);
+                            scoreContainer.appendChild(badge);
+                            body.appendChild(scoreContainer);
+                        } else {
+                            const notAvailable = document.createElement('div');
+                            notAvailable.className = 'flex items-center justify-between';
+                            
+                            const scoreText = document.createElement('p');
+                            scoreText.className = 'text-gray-500 italic';
+                            scoreText.textContent = 'Not available for this level';
+                            
+                            notAvailable.appendChild(scoreText);
+                            body.appendChild(notAvailable);
+                        }
+                    }
+                    
+                    card.appendChild(header);
+                    card.appendChild(body);
+                    equivalentScores.appendChild(card);
+                }
+            }
+            
+            // Event listeners
+            testSelect.addEventListener('change', function() {
+                updateScoreRange();
+                scoreInput.value = '';
+                resultDetails.classList.add('hidden');
+                equivalentScores.innerHTML = '';
+                
+                // Reset all level highlights
+                document.querySelectorAll('.cefr-level').forEach(el => {
+                    el.classList.remove('active');
+                    el.classList.remove('bg-blue-100');
+                    el.classList.remove('border-blue-500');
+                    el.classList.add('bg-gray-100');
+                    el.classList.add('border-gray-200');
+                });
+            });
+            
+            convertBtn.addEventListener('click', convertScore);
+            
+            scoreSlider.addEventListener('input', function() {
+                const selectedTest = testSelect.value;
+                const test = testData[selectedTest];
+                
+                if (test.isText) {
+                    // For text-based tests
+                    const index = parseInt(this.value);
+                    scoreInput.value = test.options[index];
+                } else {
+                    // For numeric tests
+                    // Format the value according to the step
+                    let formattedValue = this.value;
+                    if (test.step && test.step < 1) {
+                        const decimalPlaces = test.step.toString().split('.')[1].length;
+                        formattedValue = parseFloat(this.value).toFixed(decimalPlaces);
+                    }
+                    
+                    scoreInput.value = formattedValue;
+                }
+                
+                updateSliderThumb();
+            });
+            
+            scoreInput.addEventListener('input', function() {
+                const selectedTest = testSelect.value;
+                const test = testData[selectedTest];
+                
+                if (test.isText) {
+                    // For text-based tests
+                    const inputValue = this.value;
+                    const index = test.options.indexOf(inputValue);
+                    
+                    if (index !== -1) {
+                        scoreSlider.value = index;
+                        updateSliderThumb();
+                    }
+                } else {
+                    // For numeric tests
+                    const value = parseFloat(this.value);
+                    if (!isNaN(value) && value >= test.min && value <= test.max) {
+                        scoreSlider.value = value;
+                        updateSliderThumb();
+                    }
+                }
+            });
+            
+            // Handle Enter key in score input
+            scoreInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    convertScore();
+                }
+            });
+            
+            // Initialize
+            populateTestSelect();
+            updateScoreRange();
+            updateSliderThumb();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93314192c02a8436',t:'MTc0NTExNjYwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
