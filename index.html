@@ -324,7 +324,7 @@
             // Test score ranges and CEFR mappings
             const testData = {
                 aptis_general_l: {
-                    name: "Aptis General (Listening)",
+                    name: "British Council Aptis General (Listening)",
                     min: 0,
                     max: 50,
                     levels: {
@@ -338,7 +338,7 @@
                     }
                 },
                 aptis_general_r: {
-                    name: "Aptis General (Reading)",
+                    name: "British Council Aptis General (Reading)",
                     min: 0,
                     max: 50,
                     levels: {
@@ -352,7 +352,7 @@
                     }
                 },
                 aptis_general_s: {
-                    name: "Aptis General (Speaking)",
+                    name: "British Council Aptis General (Speaking)",
                     min: 0,
                     max: 50,
                     levels: {
@@ -366,7 +366,7 @@
                     }
                 },
                 aptis_general_w: {
-                    name: "Aptis General (Writing)",
+                    name: "British Council Aptis General (Writing)",
                     min: 0,
                     max: 50,
                     levels: {
@@ -380,7 +380,7 @@
                     }
                 },
                 aptis_advanced_l: {
-                    name: "Aptis Advanced (Listening)",
+                    name: "British Council Aptis Advanced (Listening)",
                     min: 0,
                     max: 50,
                     levels: {
@@ -394,7 +394,7 @@
                     }
                 },
                 aptis_advanced_r: {
-                    name: "Aptis Advanced (Reading)",
+                    name: "British Council Aptis Advanced (Reading)",
                     min: 0,
                     max: 50,
                     levels: {
@@ -408,7 +408,7 @@
                     }
                 },
                 aptis_advanced_sw: {
-                    name: "Aptis Advanced (Writing or Speaking)",
+                    name: "British Council Aptis Advanced (Writing or Speaking)",
                     min: 0,
                     max: 50,
                     levels: {
@@ -422,7 +422,7 @@
                     }
                 },
                 bestep_lr: {
-                    name: "BESTEP Listening and Reading",
+                    name: "LTTC BESTEP Listening and Reading",
                     min: 0,
                     max: 140,
                     levels: {
@@ -436,7 +436,7 @@
                     }
                 },
                 bestep_sw: {
-                    name: "BESTEP Speaking or Writing",
+                    name: "LTTC BESTEP Speaking or Writing",
                     min: 0,
                     max: 360,
                     step: 5,
@@ -459,7 +459,7 @@
                     levels: {
                         'Pre-A1': ["YLE Starters"],
                         'A1': ["YLE Movers"],
-                        'A2': ["YLE Flyers / A2 Key (KET)"]
+                        'A2': ["YLE Flyers / A2 Key (KET)"],
                         'B1': ["B1 Preliminary (PET)"],
                         'B2': ["B2 First (FCE)"],
                         'C1': ["C1 Advanced (CAE)"],
@@ -476,7 +476,7 @@
                     ]
                 },
                 csept_l1: {
-                    name: "CSEPT Level 1 (College Student English Proficiency Test)",
+                    name: "LTTC CSEPT Level 1",
                     min: 0,
                     max: 360,
                     levels: {
@@ -490,7 +490,7 @@
                     }
                 },
                 csept_l2: {
-                    name: "CSEPT  Level 2 (College Student English Proficiency Test)",
+                    name: "LTTC CSEPT  Level 2",
                     min: 0,
                     max: 360,
                     levels: {
@@ -499,12 +499,12 @@
                         'A2': [120, 179],
                         'B1': [180, 239],
                         'B2': [240, 360],
-                        'C1': null
+                        'C1': null,
                         'C2': null
                     }
                 },
-                csept_l2: {
-                    name: "C-EPT (Certificate of English Proficiency Test by CVES)",
+                cves_cept: {
+                    name: "CVES C-EPT",
                     min: 0,
                     max: 4,
                     isText: true,
@@ -534,7 +534,7 @@
                         'Pre-A1': null,
                         'A1': null,
                         'A2': [10, 55],
-                        'B1': [56, 85],
+                        'B1': [56, 95],
                         'B2': [100, 115],
                         'C1': [130, 145],
                         'C2': [155, 160]
@@ -555,7 +555,7 @@
                     }
                 },
                 gept: {
-                    name: "GEPT",
+                    name: "LTTC GEPT",
                     min: 0,
                     max: 5,
                     isText: true,
@@ -607,9 +607,9 @@
                     }
                 },
                 linguaskill: {
-                    name: "Linguaskill or Linguaskill Business",
+                    name: "Cambridge Linguaskill or Linguaskill Business",
                     min: 100,
-                    max: 180,
+                    max: 210,
                     levels: {
                         'Pre-A1': [82, 99],
                         'A1': [100, 119],
@@ -649,7 +649,7 @@
                     }
                 },
                 style_jet: {
-                    name: "STYLE (Saxoncourt Tests for Young learners of English) / JET (Junior English Tests)",
+                    name: "STYLE / JET",
                     min: 0,
                     max: 4,
                     isText: true,
@@ -692,7 +692,7 @@
                     levels: {
                         'Pre-A1': null,
                         'A1': null,
-                        'A2': nuall,
+                        'A2': null,
                         'B1': [42, 71],
                         'B2': [72, 94],
                         'C1': [95, 114],
@@ -741,104 +741,204 @@
                         'C2': null
                     }
                 },
-                toefl_junior_l: {
-                    name: "TOEFL Junior Standard (Listening Comprehension)",
-                    min: 100,
+                toefl_junior_lr: {
+                    name: "TOEFL Junior Standard (Listening or Reading)",
+                    min: 200,
                     max: 300,
                     step: 5,
                     levels: {
-                        'Pre-A1': [600, 625],
-                        'A1': [626, 644],
-                        'A2': [645, 744],
-                        'B1': [785, 860],
-                        'B2': [865, 900],
+                        'Pre-A1': null,
+                        'A1': [200, 205],
+                        'A2': [210, 240],
+                        'B1': [245, 285],
+                        'B2': [290, 300],
                         'C1': null,
                         'C2': null
                     }
                 },
                 toefl_junior_l: {
                     name: "TOEFL Junior Standard (Language Form and Meaning)",
-                    min: 600,
-                    max: 900,
+                    min: 200,
+                    max: 300,
                     step: 5,
                     levels: {
                         'Pre-A1': null,
-                        'A1': [100, 210],
-                        'A2': [645, 744],
-                        'B1': [785, 860],
-                        'B2': [865, 900],
+                        'A1': [200, 205],
+                        'A2': [210, 245],
+                        'B1': [250, 275],
+                        'B2': [280, 300],
                         'C1': null,
                         'C2': null
                     }
                 },
-                toefl_junior_l: {
-                    name: "TOEFL Junior Standard (Reading Comprehension)",
-                    min: 600,
-                    max: 900,
-                    step: 5,
+                toefl_junior_s: {
+                    name: "TOEFL Junior Speaking",
+                    min: 0,
+                    max: 16,
                     levels: {
-                        'Pre-A1': [600, 625],
-                        'A1': [626, 644],
-                        'A2': [645, 744],
-                        'B1': [785, 860],
-                        'B2': [865, 900],
+                        'Pre-A1': null,
+                        'A1': [0, 7],
+                        'A2': [8, 10],
+                        'B1': [11, 13],
+                        'B2': [14, 16],
                         'C1': null,
                         'C2': null
                     }
                 },
-                toefl_primary: {
-                    name: "TOEFL Primary",
+                toefl_junior_w: {
+                    name: "TOEFL Junior Writing",
+                    min: 0,
+                    max: 16,
+                    levels: {
+                        'Pre-A1': null,
+                        'A1': [0, 5],
+                        'A2': [6, 9],
+                        'B1': [10, 12],
+                        'B2': [13, 16],
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toefl_primary_l: {
+                    name: "TOEFL Primary Listening",
                     min: 100,
                     max: 115,
                     levels: {
                         'Pre-A1': [100, 101],
-                        'A1': [102, 103],
-                        'A2': [104, 109],
-                        'B1': [110, 115],
+                        'A1': [102, 104],
+                        'A2': [105, 111],
+                        'B1': [112, 115],
+                        'B2': null,
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toefl_primary_r: {
+                    name: "TOEFL Primary Reading",
+                    min: 100,
+                    max: 115,
+                    levels: {
+                        'Pre-A1': [100, 101],
+                        'A1': [102, 106],
+                        'A2': [107, 110],
+                        'B1': [111, 115],
+                        'B2': null,
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toefl_primary_s: {
+                    name: "TOEFL Primary Speaking",
+                    min: 1,
+                    max: 27,
+                    levels: {
+                        'Pre-A1': [1, 9],
+                        'A1': [10, 15],
+                        'A2': [16, 21],
+                        'B1': [22, 25],
+                        'B2': [26, 27],
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toefl_primary_w: {
+                    name: "TOEFL Primary Writing",
+                    min: 0,
+                    max: 17,
+                    levels: {
+                        'Pre-A1': [0, 5],
+                        'A1': [6, 10],
+                        'A2': [11, 15],
+                        'B1': [16, 17],
                         'B2': null,
                         'C1': null,
                         'C2': null
                     }
                 },
                 toeic_bridge: {
-                    name: "TOEIC Bridge",
-                    min: 15,
-                    max: 180,
+                    name: "TOEIC Bridge Listening and Reading",
+                    min: 30,
+                    max: 100,
                     levels: {
-                        'Pre-A1': [15, 34],
-                        'A1': [35, 69],
-                        'A2': [70, 109],
-                        'B1': [110, 149],
-                        'B2': [150, 180],
+                        'Pre-A1': [30, 34],
+                        'A1': [35, 59],
+                        'A2': [60, 83],
+                        'B1': [84, 100],
+                        'B2': null,
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toeic_bridge_s: {
+                    name: "TOEIC Bridge Speaking",
+                    min: 15,
+                    max: 50,
+                    levels: {
+                        'Pre-A1': [15, 22],
+                        'A1': [23, 36],
+                        'A2': [37, 42],
+                        'B1': [43, 50],
+                        'B2': null,
+                        'C1': null,
+                        'C2': null
+                    }
+                },
+                toeic_bridge_w: {
+                    name: "TOEIC Bridge Writing",
+                    min: 15,
+                    max: 50,
+                    levels: {
+                        'Pre-A1': [15, 19],
+                        'A1': [20, 31],
+                        'A2': [32, 42],
+                        'B1': [43, 50],
+                        'B2': null,
                         'C1': null,
                         'C2': null
                     }
                 },
                 toeic_lr: {
-                    name: "TOEIC L&R",
+                    name: "TOEIC Listening and Reading",
                     min: 10,
                     max: 990,
+		    step: 5,
                     levels: {
-                        'Pre-A1': [10, 120],
-                        'A1': [121, 225],
-                        'A2': [226, 545],
-                        'B1': [546, 785],
-                        'B2': [786, 940],
-                        'C1': [941, 990],
+                        'Pre-A1': [10, 115],
+                        'A1': [120, 220],
+                        'A2': [225, 545],
+                        'B1': [550, 780],
+                        'B2': [785, 945],
+                        'C1': [950, 990],
                         'C2': null
                     }
                 },
-                toeic_sw: {
-                    name: "TOEIC S&W",
+                toeic_s: {
+                    name: "TOEIC Speaking",
                     min: 0,
-                    max: 400,
+                    max: 200,
+		    step: 5,
                     levels: {
-                        'Pre-A1': [0, 50],
-                        'A1': [51, 90],
-                        'A2': [91, 170],
-                        'B1': [171, 250],
-                        'B2': [251, 320],
-                        'C1': [321, 400],
+                        'Pre-A1': [0, 45],
+                        'A1': [50, 85],
+                        'A2': [90, 115],
+                        'B1': [120, 155],
+                        'B2': [160, 175],
+                        'C1': [180, 200],
+                        'C2': null
+                    }
+                },
+                toeic_w: {
+                    name: "TOEIC Writing",
+                    min: 0,
+                    max: 200,
+		    step: 5,
+                    levels: {
+                        'Pre-A1': [0, 25],
+                        'A1': [30, 65],
+                        'A2': [70, 115],
+                        'B1': [120, 145],
+                        'B2': [150, 175],
+                        'C1': [180, 200],
                         'C2': null
                     }
                 }
